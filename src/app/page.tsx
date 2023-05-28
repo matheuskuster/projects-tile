@@ -1,6 +1,6 @@
-import { AutoPlaySwitch } from '@/components/auto-play-switch';
 import { NewProject } from '@/components/new-project';
 import { Projects } from '@/components/projects';
+import { SettingsPopover } from '@/components/settings-popover';
 import { SlideControl } from '@/components/slide-control';
 import { StatusSelect } from '@/components/status-select';
 
@@ -11,11 +11,11 @@ export default function Home() {
         <section className="flex gap-4">
           <StatusSelect />
           <SlideControl />
-          <AutoPlaySwitch />
         </section>
 
         <section className="flex items-center gap-4">
           <NewProject />
+          <SettingsPopover />
         </section>
       </header>
 
