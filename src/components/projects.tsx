@@ -1,28 +1,43 @@
 'use client';
 
-import { useEffect } from 'react';
-
 import { ProjectCard } from './project-card';
-import { useSlides } from './slide-provider';
-
-const projectsCount = 0;
+import { useProjects } from './projects-provider';
 
 export function Projects() {
-  const { setTotalCount, startAt, totalCount } = useSlides();
+  const { projects, isFetching } = useProjects();
 
-  useEffect(() => {
-    setTotalCount(projectsCount);
-  }, [setTotalCount]);
+  if (isFetching) {
+    return (
+      <section
+        className="grid overflow-hidden gap-4 p-4"
+        style={{
+          gridTemplateColumns: 'repeat(auto-fill, minmax(384px, 1fr))',
+        }}
+      >
+        {Array.from({ length: 50 }).map((_, index) => (
+          <ProjectCard.Skeleton key={index} />
+        ))}
+      </section>
+    );
+  }
 
-  return totalCount > 0 ? (
+  return projects.length > 0 ? (
     <section
       className="grid overflow-hidden gap-4 p-4"
       style={{
         gridTemplateColumns: 'repeat(auto-fill, minmax(384px, 1fr))',
       }}
     >
-      {Array.from({ length: totalCount - startAt }, (_, i) => (
-        <ProjectCard key={i} />
+      {projects.map((project) => (
+        <ProjectCard
+          name={project.name}
+          manager={project.manager}
+          startDate={project.startDate}
+          endDate={project.endDate}
+          progress={50}
+          status={project.status}
+          key={project.id}
+        />
       ))}
     </section>
   ) : (

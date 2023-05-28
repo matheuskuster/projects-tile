@@ -26,21 +26,21 @@ export function SettingsPopover() {
           <div className="grid gap-2">
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Primary color</Label>
-              <Input id="name" placeholder="#000000" />
+              <Input disabled id="name" placeholder="#000000" />
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Secondary color</Label>
-              <Input id="name" placeholder="#000000" />
+              <Input disabled id="name" placeholder="#000000" />
             </div>
           </div>
           <div className="flex flex-col space-y-1.5">
             <div className="flex items-center justify-between">
               <Label htmlFor="automatic-slides">Automatic slides</Label>
-              <Switch id="automatic-slides" />
+              <Switch disabled id="automatic-slides" />
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="hide-navbar">Hide navbar</Label>
-              <Switch id="hide-navbar" />
+              <Switch disabled id="hide-navbar" />
             </div>
           </div>
 

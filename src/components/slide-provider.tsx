@@ -12,7 +12,6 @@ export interface SlideContextType {
   goBack: () => void;
   goForward: () => void;
   startAt: number;
-  isPassingSlide: boolean;
 
   setTotalCount: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -28,7 +27,6 @@ export const SlideProvider: React.FC<SlideProviderProps> = ({ children }) => {
   const [totalCount, setTotalCount] = React.useState<number>(0);
   const [slideIndex, setSlideIndex] = React.useState<number>(0);
   const [totalSlides, setTotalSlides] = React.useState<number>(0);
-  const [isPassingSlide, setIsPassingSlide] = React.useState<boolean>(false);
 
   const canGoBack = slideIndex > 0;
   const canGoForward = slideIndex < totalSlides - 1;
@@ -48,11 +46,7 @@ export const SlideProvider: React.FC<SlideProviderProps> = ({ children }) => {
     const tilesInViewport =
       availableTilesInViewport > totalCount ? totalCount : availableTilesInViewport;
     setTileCount(tilesInViewport);
-
-    if (slideIndex >= totalSlides - 1) {
-      setSlideIndex(totalSlides - 1);
-    }
-  }, [totalCount, totalSlides, slideIndex]);
+  }, [totalCount]);
 
   const calculateTotalSlides = useCallback(() => {
     if (tileCount > 0 && totalCount > 0) {
@@ -62,19 +56,28 @@ export const SlideProvider: React.FC<SlideProviderProps> = ({ children }) => {
     }
   }, [tileCount, totalCount]);
 
-  const goBack = () => {
+  const goBack = useCallback(() => {
     if (canGoBack) {
-      setIsPassingSlide(true);
       setSlideIndex((prev) => prev - 1);
     }
-  };
+  }, [canGoBack]);
 
-  const goForward = () => {
+  const goForward = useCallback(() => {
     if (canGoForward) {
-      setIsPassingSlide(true);
       setSlideIndex((prev) => prev + 1);
     }
-  };
+  }, [canGoForward]);
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        goBack();
+      } else if (event.key === 'ArrowRight') {
+        goForward();
+      }
+    },
+    [goBack, goForward]
+  );
 
   const startAt = useMemo(() => {
     return slideIndex * tileCount;
@@ -83,18 +86,26 @@ export const SlideProvider: React.FC<SlideProviderProps> = ({ children }) => {
   useEffect(() => {
     calculateTiles();
     window.addEventListener('resize', calculateTiles);
-    return () => window.removeEventListener('resize', calculateTiles);
-  }, [calculateTiles]);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('resize', calculateTiles);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [calculateTiles, handleKeyDown]);
 
   useEffect(() => {
     calculateTotalSlides();
   }, [calculateTotalSlides]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsPassingSlide(false);
-    }, 2000);
-  }, [isPassingSlide]);
+    if (totalCount === 0) {
+      setSlideIndex(0);
+    }
+
+    if (totalCount > 0 && totalSlides >= 1 && startAt >= totalCount) {
+      setSlideIndex(totalSlides - 1);
+    }
+  }, [tileCount, totalSlides, startAt, totalCount]);
 
   return (
     <SlideContext.Provider
@@ -109,7 +120,6 @@ export const SlideProvider: React.FC<SlideProviderProps> = ({ children }) => {
         goBack,
         goForward,
         startAt,
-        isPassingSlide,
       }}
     >
       {children}

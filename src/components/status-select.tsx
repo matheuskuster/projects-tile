@@ -1,4 +1,6 @@
+import { Status } from '@prisma/client';
 import { SelectProps } from '@radix-ui/react-select';
+import { Dot } from 'lucide-react';
 
 import {
   Select,
@@ -10,7 +12,11 @@ import {
   SelectValue,
 } from './ui/select';
 
-export function StatusSelect(props: SelectProps) {
+interface StatusSelectProps extends SelectProps {
+  statuses: Status[];
+}
+
+export function StatusSelect({ statuses, ...props }: StatusSelectProps) {
   return (
     <Select {...props}>
       <SelectTrigger className="min-w-[220px]">
@@ -19,11 +25,14 @@ export function StatusSelect(props: SelectProps) {
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Status</SelectLabel>
-          <SelectItem value="apple">Apple</SelectItem>
-          <SelectItem value="banana">Banana</SelectItem>
-          <SelectItem value="blueberry">Blueberry</SelectItem>
-          <SelectItem value="grapes">Grapes</SelectItem>
-          <SelectItem value="pineapple">Pineapple</SelectItem>
+          {statuses.map((status) => (
+            <SelectItem key={status.id} value={status.id}>
+              <div className="flex items-center">
+                <Dot className="w-8 h-8" color={status.color} />
+                {status.name}
+              </div>
+            </SelectItem>
+          ))}
         </SelectGroup>
       </SelectContent>
     </Select>
