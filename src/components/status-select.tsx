@@ -1,7 +1,10 @@
+'use client';
+
 import { Status } from '@prisma/client';
 import { SelectProps } from '@radix-ui/react-select';
 import { Dot } from 'lucide-react';
 
+import { useProjects } from './projects-provider';
 import {
   Select,
   SelectContent,
@@ -17,8 +20,10 @@ interface StatusSelectProps extends SelectProps {
 }
 
 export function StatusSelect({ statuses, ...props }: StatusSelectProps) {
+  const { filterByStatusId } = useProjects();
+
   return (
-    <Select {...props}>
+    <Select onValueChange={(value) => filterByStatusId(value)} {...props}>
       <SelectTrigger className="min-w-[220px]">
         <SelectValue placeholder="Select a status" />
       </SelectTrigger>
