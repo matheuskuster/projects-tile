@@ -6,7 +6,7 @@ import { StatusSelect } from '@/components/status-select';
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-hidden bg-background">
+    <main className="overflow-hidden bg-background h-screen">
       <header className="px-4 h-16 border-b flex items-center justify-between">
         <section className="flex gap-4">
           <StatusSelect />
@@ -19,7 +19,7 @@ export default function Home() {
         </section>
       </header>
 
-      <main>
+      <main className="h-full">
         <Projects />
       </main>
     </main>

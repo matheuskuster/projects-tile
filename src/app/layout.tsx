@@ -1,5 +1,8 @@
-import './globals.css';
 import { Outfit } from 'next/font/google';
+
+import { SlideProvider } from '@/components/slide-provider';
+
+import './globals.css';
 
 const outfit = Outfit({ subsets: ['latin'] });
 
@@ -11,7 +14,9 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={outfit.className}>{children}</body>
+      <SlideProvider>
+        <body className={outfit.className}>{children}</body>
+      </SlideProvider>
     </html>
   );
 }
