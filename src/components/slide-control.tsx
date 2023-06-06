@@ -6,14 +6,14 @@ import { useSlides } from './slide-provider';
 import { Button } from './ui/button';
 
 export function SlideControl() {
-  const { canGoBack, canGoForward, goBack, goForward, totalSlides } = useSlides();
+  const { canGoBack, canGoForward, goBack, goForward, totalSlides, slideIndex } = useSlides();
 
   if (totalSlides <= 1) {
     return null;
   }
 
   return (
-    <section className="flex gap-2">
+    <section className="flex items-center gap-2">
       <Button
         disabled={!canGoBack}
         onClick={goBack}
@@ -30,6 +30,10 @@ export function SlideControl() {
       >
         <ChevronRight className="w-6 h-6" />
       </Button>
+
+      <span className="text-muted-foreground mt-[1px]">
+        {slideIndex + 1}/{totalSlides}
+      </span>
     </section>
   );
 }
