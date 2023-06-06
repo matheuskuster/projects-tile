@@ -2,6 +2,8 @@
 
 import React, { useCallback, useEffect, useMemo } from 'react';
 
+import { useInterval } from '@/hooks/use-interval';
+
 export interface SlideContextType {
   slideIndex: number;
   totalSlides: number;
@@ -12,6 +14,9 @@ export interface SlideContextType {
   goBack: () => void;
   goForward: () => void;
   startAt: number;
+  turnOnAutomaticSlides: () => void;
+  turnOffAutomaticSlides: () => void;
+  isAutomaticSlidesOn: boolean;
 
   setTotalCount: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -27,6 +32,7 @@ export const SlideProvider: React.FC<SlideProviderProps> = ({ children }) => {
   const [totalCount, setTotalCount] = React.useState<number>(0);
   const [slideIndex, setSlideIndex] = React.useState<number>(0);
   const [totalSlides, setTotalSlides] = React.useState<number>(0);
+  const [isAutomaticSlidesOn, setIsAutomaticSlidesOn] = React.useState<boolean>(false);
 
   const canGoBack = slideIndex > 0;
   const canGoForward = slideIndex < totalSlides - 1;
@@ -65,8 +71,10 @@ export const SlideProvider: React.FC<SlideProviderProps> = ({ children }) => {
   const goForward = useCallback(() => {
     if (canGoForward) {
       setSlideIndex((prev) => prev + 1);
+    } else if (isAutomaticSlidesOn) {
+      setSlideIndex(0);
     }
-  }, [canGoForward]);
+  }, [canGoForward, isAutomaticSlidesOn]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -78,6 +86,16 @@ export const SlideProvider: React.FC<SlideProviderProps> = ({ children }) => {
     },
     [goBack, goForward]
   );
+
+  const turnOnAutomaticSlides = useCallback(() => {
+    setIsAutomaticSlidesOn(true);
+    setSlideIndex(0);
+  }, []);
+
+  const turnOffAutomaticSlides = useCallback(() => {
+    setIsAutomaticSlidesOn(false);
+    setSlideIndex(0);
+  }, []);
 
   const startAt = useMemo(() => {
     return slideIndex * tileCount;
@@ -107,6 +125,12 @@ export const SlideProvider: React.FC<SlideProviderProps> = ({ children }) => {
     }
   }, [tileCount, totalSlides, startAt, totalCount]);
 
+  useInterval(() => {
+    if (isAutomaticSlidesOn) {
+      goForward();
+    }
+  }, 10000); // 10 seconds
+
   return (
     <SlideContext.Provider
       value={{
@@ -120,6 +144,9 @@ export const SlideProvider: React.FC<SlideProviderProps> = ({ children }) => {
         goBack,
         goForward,
         startAt,
+        turnOnAutomaticSlides,
+        turnOffAutomaticSlides,
+        isAutomaticSlidesOn,
       }}
     >
       {children}

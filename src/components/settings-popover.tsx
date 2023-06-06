@@ -1,8 +1,8 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Settings2 } from 'lucide-react';
-import React, { useEffect } from 'react';
+import { Loader2, Settings2 } from 'lucide-react';
+import React, { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 import { Form, FormControl, FormField, FormItem, FormLabel } from './react-hook-form/form';
+import { useSlides } from './slide-provider';
 import { Switch } from './ui/switch';
 
 const settingsFormSchema = z.object({
@@ -24,38 +25,56 @@ const settingsFormSchema = z.object({
 });
 
 export function SettingsPopover() {
+  const [open, setOpen] = React.useState<boolean>(false);
+  const { turnOffAutomaticSlides, turnOnAutomaticSlides } = useSlides();
   const [isSaving, setIsSaving] = React.useState<boolean>(false);
 
   const form = useForm<z.infer<typeof settingsFormSchema>>({
     resolver: zodResolver(settingsFormSchema),
+    defaultValues: {
+      automaticSlides: false,
+    },
   });
 
   const onSubmit = async (values: z.infer<typeof settingsFormSchema>) => {
     setIsSaving(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 200));
     localStorage.setItem('@projects-tiles/settings', JSON.stringify(values));
+
     applySettings(values);
     setIsSaving(false);
+    setOpen(false);
   };
 
-  const applySettings = (settings: z.infer<typeof settingsFormSchema>) => {
-    const root = document.documentElement;
+  const applySettings = useCallback(
+    (settings: z.infer<typeof settingsFormSchema>) => {
+      const root = document.documentElement;
 
-    if (settings.primaryColor) {
-      root.style.setProperty('--primary', settings.primaryColor);
-    }
+      if (settings.primaryColor) {
+        root.style.setProperty('--primary', settings.primaryColor);
+      }
 
-    if (settings.secondaryColor) {
-      root.style.setProperty('--secondary', settings.secondaryColor);
-    }
+      if (settings.secondaryColor) {
+        root.style.setProperty('--secondary', settings.secondaryColor);
+      }
 
-    if (settings.backgroundColor) {
-      root.style.setProperty('--background', settings.backgroundColor);
-    }
+      if (settings.backgroundColor) {
+        root.style.setProperty('--background', settings.backgroundColor);
+      }
 
-    if (settings.foregroundColor) {
-      root.style.setProperty('--foreground', settings.foregroundColor);
-    }
-  };
+      if (settings.foregroundColor) {
+        root.style.setProperty('--foreground', settings.foregroundColor);
+      }
+
+      if (settings.automaticSlides) {
+        turnOnAutomaticSlides();
+      } else {
+        turnOffAutomaticSlides();
+      }
+    },
+    [turnOffAutomaticSlides, turnOnAutomaticSlides]
+  );
 
   useEffect(() => {
     const settings = localStorage.getItem('@projects-tiles/settings');
@@ -63,10 +82,10 @@ export function SettingsPopover() {
       form.reset(JSON.parse(settings));
       applySettings(JSON.parse(settings));
     }
-  }, [form]);
+  }, [form, applySettings]);
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" className="w-10 rounded-full p-0">
           <Settings2 className="h-4 w-4" />
@@ -133,17 +152,35 @@ export function SettingsPopover() {
               />
             </div>
             <div className="flex flex-col space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="automatic-slides">Automatic slides</Label>
-                <Switch disabled id="automatic-slides" />
-              </div>
+              <FormField
+                name="automaticSlides"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="flex items-center justify-between">
+                    <FormLabel>Automatic slides</FormLabel>
+                    <FormControl>
+                      <Switch
+                        id="automaticSlides"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        name={field.name}
+                        ref={field.ref}
+                        onBlur={field.onBlur}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
               <div className="flex items-center justify-between">
                 <Label htmlFor="hide-navbar">Hide navbar</Label>
                 <Switch disabled id="hide-navbar" />
               </div>
             </div>
 
-            <Button>Save</Button>
+            <Button disabled={isSaving}>
+              {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Save
+            </Button>
           </form>
         </Form>
       </PopoverContent>
