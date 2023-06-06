@@ -5,8 +5,8 @@ import React, { useEffect } from 'react';
 
 import { useSlides } from './slide-provider';
 
-async function getProjects() {
-  const response = await fetch('/api/projects');
+async function getProjects(abortController?: AbortController) {
+  const response = await fetch('/api/projects', { signal: abortController?.signal });
   const projects = await response.json();
   return projects;
 }
@@ -65,7 +65,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
 
     setIsFetching(true);
 
-    getProjects()
+    getProjects(abortController)
       .then((projects) => {
         setAllProjects(projects);
       })

@@ -4,7 +4,7 @@ import { NewProject } from './new-project';
 import { ReloadingIndicator } from './reloading-indicator';
 import { SettingsPopover } from './settings-popover';
 import { SlideControl } from './slide-control';
-import { StatusSelect } from './status-select';
+import { StatusCombobox } from './status-combobox';
 
 export async function MainNav() {
   const statuses = await prisma.status.findMany();
@@ -12,7 +12,7 @@ export async function MainNav() {
   return (
     <header className="px-4 h-16 border-b flex items-center justify-between">
       <section className="flex items-center gap-4">
-        <StatusSelect statuses={statuses} />
+        <StatusCombobox statuses={statuses} />
         <SlideControl />
         <ReloadingIndicator />
       </section>
