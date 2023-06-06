@@ -2,7 +2,6 @@
 
 import { Status } from '@prisma/client';
 import { SelectProps } from '@radix-ui/react-select';
-import { Dot } from 'lucide-react';
 
 import {
   Select,
@@ -30,7 +29,7 @@ export function StatusSelect({ statuses, ...props }: StatusSelectProps) {
           {statuses.map((status) => (
             <SelectItem key={status.id} value={status.id}>
               <div className="flex items-center">
-                <Dot className="w-8 h-8" color={status.color} />
+                <div className="w-4 h-4 rounded mr-2" style={{ background: status.color }} />
                 {status.name}
               </div>
             </SelectItem>
