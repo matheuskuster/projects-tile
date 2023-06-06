@@ -8,15 +8,7 @@ import { useSlides } from './slide-provider';
 async function getProjects(abortController?: AbortController) {
   const response = await fetch('/api/projects', { signal: abortController?.signal });
   const projects = await response.json();
-  return [
-    ...projects,
-    ...projects,
-    ...projects,
-    ...projects,
-    ...projects,
-    ...projects,
-    ...projects,
-  ];
+  return projects;
 }
 
 type ProjectWithStatus = Project & {

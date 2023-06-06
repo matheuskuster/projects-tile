@@ -49,7 +49,7 @@ export function StatusCombobox({ statuses }: StatusComboboxProps) {
                 {selectedStatus.name}
               </>
             ) : (
-              <>+ Set status</>
+              <>Set status</>
             )}
           </Button>
         </PopoverTrigger>

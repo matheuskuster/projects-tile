@@ -3,20 +3,23 @@
 import { Calendar } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-import { formatDate } from '@/lib/format-date';
+import { formatDateLong } from '@/lib/format-date';
 
+import { ProjectSheet } from './project-sheet';
 import { Badge } from './ui/badge';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from './ui/sheet';
 import { Skeleton } from './ui/skeleton';
 
-interface ProjectCardProps {
+export interface ProjectCardProps {
+  id: string;
   name: string;
   manager: string;
   startDate: Date;
   endDate: Date;
   progress: number;
+  imgUrl?: string;
+  description?: string;
   status: {
     id: string;
     name: string;
@@ -25,17 +28,20 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({
+  id,
   name,
   manager,
   startDate,
   endDate,
   progress,
   status,
+  description,
+  imgUrl,
 }: ProjectCardProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const formattedStartDate = useMemo(() => formatDate(startDate), [startDate]);
-  const formattedEndDate = useMemo(() => formatDate(endDate), [endDate]);
+  const formattedStartDate = useMemo(() => formatDateLong(startDate), [startDate]);
+  const formattedEndDate = useMemo(() => formatDateLong(endDate), [endDate]);
 
   return (
     <>
@@ -68,14 +74,21 @@ export function ProjectCard({
         </CardFooter>
       </Card>
 
-      <Sheet open={sheetOpen} onOpenChange={(value) => setSheetOpen(value)}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>{name}</SheetTitle>
-            <SheetDescription>{manager}</SheetDescription>
-          </SheetHeader>
-        </SheetContent>
-      </Sheet>
+      <ProjectSheet
+        open={sheetOpen}
+        setOpen={setSheetOpen}
+        project={{
+          id,
+          name,
+          endDate,
+          manager,
+          progress,
+          startDate,
+          status,
+          description,
+          imgUrl,
+        }}
+      />
     </>
   );
 }

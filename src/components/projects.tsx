@@ -30,6 +30,7 @@ export function Projects() {
     >
       {projects.map((project) => (
         <ProjectCard
+          id={project.id}
           name={project.name}
           manager={project.manager}
           startDate={project.startDate}

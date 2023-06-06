@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Status } from '@prisma/client';
 import { Loader2, Plus } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -88,6 +88,10 @@ export function NewProject({ statuses }: NewProjectProps) {
 
     setIsCreating(false);
   };
+
+  useEffect(() => {
+    localStorage.setItem('@project-tiles/statuses', JSON.stringify(statuses));
+  }, [statuses]);
 
   return (
     <Dialog open={open} onOpenChange={(value) => setOpen(value)}>
