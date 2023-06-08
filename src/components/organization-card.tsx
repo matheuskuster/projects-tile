@@ -33,7 +33,7 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
         )}
       </CardHeader>
       <CardContent className="px-4">
-        <span className="text-muted-foreground text-md">Cashier in the cloud.</span>
+        <span className="text-muted-foreground text-md">{organization.description}</span>
       </CardContent>
     </Card>
   );

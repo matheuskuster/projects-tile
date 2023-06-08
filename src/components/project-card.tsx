@@ -49,7 +49,7 @@ export function ProjectCard({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle
-              className="hover:underline hover:cursor-pointer"
+              className="hover:underline hover:cursor-pointer text-primary"
               onClick={() => setSheetOpen(true)}
             >
               {name}

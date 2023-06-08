@@ -24,7 +24,11 @@ const settingsFormSchema = z.object({
   hideNavbar: z.boolean().optional(),
 });
 
-export function SettingsPopover() {
+interface SettingsPopoverProps {
+  organizationId: string;
+}
+
+export function SettingsPopover({ organizationId }: SettingsPopoverProps) {
   const [open, setOpen] = React.useState<boolean>(false);
   const { turnOffAutomaticSlides, turnOnAutomaticSlides } = useSlides();
   const [isSaving, setIsSaving] = React.useState<boolean>(false);
@@ -40,7 +44,7 @@ export function SettingsPopover() {
     setIsSaving(true);
 
     await new Promise((resolve) => setTimeout(resolve, 200));
-    localStorage.setItem('@projects-tiles/settings', JSON.stringify(values));
+    localStorage.setItem(`@projects-tiles/settings-${organizationId}`, JSON.stringify(values));
 
     applySettings(values);
     setIsSaving(false);
@@ -53,18 +57,26 @@ export function SettingsPopover() {
 
       if (settings.primaryColor) {
         root.style.setProperty('--primary', settings.primaryColor.replace(/,/g, ''));
+      } else {
+        root.style.setProperty('--primary', 'var(--primary-default)');
       }
 
       if (settings.secondaryColor) {
         root.style.setProperty('--secondary', settings.secondaryColor.replace(/,/g, ''));
+      } else {
+        root.style.setProperty('--secondary', 'var(--secondary-default)');
       }
 
       if (settings.backgroundColor) {
         root.style.setProperty('--background', settings.backgroundColor.replace(/,/g, ''));
+      } else {
+        root.style.setProperty('--background', 'var(--background-default)');
       }
 
       if (settings.foregroundColor) {
         root.style.setProperty('--foreground', settings.foregroundColor.replace(/,/g, ''));
+      } else {
+        root.style.setProperty('--foreground', 'var(--foreground-default)');
       }
 
       if (settings.automaticSlides) {
@@ -77,12 +89,12 @@ export function SettingsPopover() {
   );
 
   useEffect(() => {
-    const settings = localStorage.getItem('@projects-tiles/settings');
+    const settings = localStorage.getItem(`@projects-tiles/settings-${organizationId}`);
     if (settings) {
       form.reset(JSON.parse(settings));
       applySettings(JSON.parse(settings));
     }
-  }, [form, applySettings]);
+  }, [form, applySettings, organizationId]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

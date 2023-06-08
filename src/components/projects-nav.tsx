@@ -34,7 +34,7 @@ export async function ProjectsNav({ organization }: ProjectsNavProps) {
       <section className="flex items-center gap-4">
         <StatusCombobox statuses={statuses} />
         <NewProject statuses={statuses} organizationId={organization.id} />
-        <SettingsPopover />
+        <SettingsPopover organizationId={organization.id} />
       </section>
     </header>
   );
