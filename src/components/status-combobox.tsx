@@ -35,8 +35,7 @@ export function StatusCombobox({ statuses }: StatusComboboxProps) {
   }, [selectedStatus, filterByStatusId]);
 
   return (
-    <div className="flex items-center space-x-4">
-      <p className="text-sm text-muted-foreground">Status</p>
+    <div className="flex items-center">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline" size="sm" className="w-[150px] justify-start">

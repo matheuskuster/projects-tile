@@ -25,6 +25,7 @@ import { useToast } from './ui/use-toast';
 
 interface NewProjectProps {
   statuses: Status[];
+  organizationId: string;
 }
 
 const newProjectFormSchema = z.object({
@@ -35,7 +36,7 @@ const newProjectFormSchema = z.object({
   endDate: z.string().regex(/^\d{2}\/\d{2}\/\d{4}$/),
 });
 
-export function NewProject({ statuses }: NewProjectProps) {
+export function NewProject({ statuses, organizationId }: NewProjectProps) {
   const { reload } = useProjects();
   const { toast } = useToast();
   const [open, setOpen] = React.useState<boolean>(false);
@@ -63,6 +64,7 @@ export function NewProject({ statuses }: NewProjectProps) {
         ...values,
         startDate,
         endDate,
+        organizationId,
       }),
       headers: {
         'Content-Type': 'application/json',

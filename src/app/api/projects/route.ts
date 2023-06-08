@@ -7,6 +7,7 @@ const projectCreateSchema = z.object({
   name: z.string().min(1),
   manager: z.string().min(1),
   status: z.string().uuid(),
+  organizationId: z.string().uuid(),
   startDate: z.string(),
   endDate: z.string(),
 });
@@ -22,6 +23,11 @@ export async function POST(request: NextRequest) {
         manager: body.manager,
         startDate: new Date(body.startDate),
         endDate: new Date(body.endDate),
+        organization: {
+          connect: {
+            id: body.organizationId,
+          },
+        },
         imgURL: '',
         status: {
           connect: {

@@ -52,19 +52,19 @@ export function SettingsPopover() {
       const root = document.documentElement;
 
       if (settings.primaryColor) {
-        root.style.setProperty('--primary', settings.primaryColor);
+        root.style.setProperty('--primary', settings.primaryColor.replace(/,/g, ''));
       }
 
       if (settings.secondaryColor) {
-        root.style.setProperty('--secondary', settings.secondaryColor);
+        root.style.setProperty('--secondary', settings.secondaryColor.replace(/,/g, ''));
       }
 
       if (settings.backgroundColor) {
-        root.style.setProperty('--background', settings.backgroundColor);
+        root.style.setProperty('--background', settings.backgroundColor.replace(/,/g, ''));
       }
 
       if (settings.foregroundColor) {
-        root.style.setProperty('--foreground', settings.foregroundColor);
+        root.style.setProperty('--foreground', settings.foregroundColor.replace(/,/g, ''));
       }
 
       if (settings.automaticSlides) {

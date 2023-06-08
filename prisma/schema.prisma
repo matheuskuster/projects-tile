@@ -22,7 +22,9 @@ model Project {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  statusId String @map("status_id")
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       @map("organization_id")
+  statusId       String        @map("status_id")
 }
 
 model Status {
@@ -33,9 +35,13 @@ model Status {
 }
 
 model Organization {
-  id        String   @id @default(uuid())
-  name      String
-  imgURL    String   @map("img_url")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id          String    @id @default(uuid())
+  name        String
+  manager     String
+  description String?
+  website     String?
+  imgURL      String?   @map("img_url")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  projects    Project[]
 }

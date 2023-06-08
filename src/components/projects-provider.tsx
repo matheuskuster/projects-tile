@@ -1,12 +1,14 @@
 'use client';
 
-import { Project, Status } from '@prisma/client';
+import { Organization, Project, Status } from '@prisma/client';
 import React, { useEffect } from 'react';
 
 import { useSlides } from './slide-provider';
 
-async function getProjects(abortController?: AbortController) {
-  const response = await fetch('/api/projects', { signal: abortController?.signal });
+async function getProjects(organizationId: string, abortController?: AbortController) {
+  const response = await fetch(`/api/organizations/${organizationId}/projects`, {
+    signal: abortController?.signal,
+  });
   const projects = await response.json();
   return projects;
 }
@@ -20,6 +22,8 @@ type ProjectsContextType = {
   filterByStatusId: (statusId: string | null) => void;
   isFetching: boolean;
   isReloading: boolean;
+  organization: Organization | null;
+  setOrganization: (organization: Organization | null) => void;
   reload: () => void;
 };
 
@@ -36,6 +40,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
   const [isReloading, setIsReloading] = React.useState<boolean>(false);
   const [statusId, setStatusId] = React.useState<string | null>(null);
   const [allProjects, setAllProjects] = React.useState<ProjectWithStatus[]>([]);
+  const [organization, setOrganization] = React.useState<Organization | null>(null);
 
   const filteredProjects = React.useMemo(() => {
     if (!statusId) {
@@ -50,8 +55,12 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
   }, [filteredProjects, startAt, tileCount]);
 
   const reload = () => {
+    if (!organization) {
+      return;
+    }
+
     setIsReloading(true);
-    getProjects()
+    getProjects(organization.id)
       .then((projects) => {
         setAllProjects(projects);
       })
@@ -61,11 +70,15 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
   };
 
   useEffect(() => {
+    if (!organization) {
+      return;
+    }
+
     const abortController = new AbortController();
 
     setIsFetching(true);
 
-    getProjects(abortController)
+    getProjects(organization.id, abortController)
       .then((projects) => {
         setAllProjects(projects);
       })
@@ -83,7 +96,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
     return () => {
       abortController.abort();
     };
-  }, []);
+  }, [organization]);
 
   useEffect(() => {
     setTotalCount(filteredProjects.length);
@@ -97,6 +110,8 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
         isFetching,
         isReloading,
         reload,
+        organization,
+        setOrganization,
       }}
     >
       {children}

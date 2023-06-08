@@ -1,10 +1,21 @@
 'use client';
 
+import { Organization } from '@prisma/client';
+import { useEffect } from 'react';
+
 import { ProjectCard } from './project-card';
 import { useProjects } from './projects-provider';
 
-export function Projects() {
-  const { projects, isFetching } = useProjects();
+interface ProjectsProps {
+  organization: Organization;
+}
+
+export function Projects({ organization }: ProjectsProps) {
+  const { projects, isFetching, setOrganization } = useProjects();
+
+  useEffect(() => {
+    setOrganization(organization);
+  }, [organization, setOrganization]);
 
   if (isFetching) {
     return (

@@ -1,14 +1,18 @@
-import { MainNav } from '@/components/main-nav';
-import { Projects } from '@/components/projects';
+import { OrganizationCard } from '@/components/organization-card';
+import { OrganizationsNav } from '@/components/organizations-nav';
+import prisma from '@/lib/prisma';
 
-export default function Home() {
+export default async function Home() {
+  const organizations = await prisma.organization.findMany();
+
   return (
     <main className="overflow-hidden bg-background h-screen">
-      {/* @ts-expect-error Async Server Component */}
-      <MainNav />
+      <OrganizationsNav />
 
-      <main className="h-full">
-        <Projects />
+      <main className="grid grid-cols-4 overflow-hidden gap-4 p-4 h-full">
+        {organizations.map((organization) => (
+          <OrganizationCard organization={organization} key={organization.id} />
+        ))}
       </main>
     </main>
   );

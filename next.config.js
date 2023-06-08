@@ -5,6 +5,9 @@ const nextConfig = {
       transform: 'lucide-react/dist/esm/icons/{{ kebabCase member }}',
     },
   },
+  images: {
+    domains: ['kea.ai'],
+  },
 };
 
 module.exports = nextConfig;
