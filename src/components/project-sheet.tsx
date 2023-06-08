@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Status } from '@prisma/client';
-import { Copy } from 'lucide-react';
+import { Copy, Loader2 } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { formatDate } from '@/lib/format-date';
 
 import { ProjectCardProps } from './project-card';
+import { useProjects } from './projects-provider';
 import { Form, FormControl, FormField, FormItem, FormLabel } from './react-hook-form/form';
 import { StatusSelect } from './status-select';
 import { Badge } from './ui/badge';
@@ -44,7 +45,67 @@ const editProjectFormSchema = z.object({
 export function ProjectSheet({ open, setOpen, project }: ProjectSheetProps) {
   const [isEditingTitle, setIsEditingTitle] = React.useState(false);
   const [newName, setNewName] = React.useState(project.name);
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+  const { reload } = useProjects();
   const { toast } = useToast();
+
+  const onSave = async (data: z.infer<typeof editProjectFormSchema>) => {
+    setIsSaving(true);
+
+    const response = await fetch(`/api/projects/${project.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        name: newName ?? project.name,
+        description: data.description,
+        status: data.status,
+        manager: data.manager,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        imgUrl: data.imgUrl,
+      }),
+    });
+
+    if (response.ok) {
+      toast({
+        description: 'Project updated successfully',
+      });
+      reload();
+      setOpen(false);
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Something went wrong while updating the project',
+        variant: 'destructive',
+      });
+    }
+
+    setIsSaving(false);
+  };
+
+  const onDelete = async () => {
+    setIsDeleting(true);
+
+    const response = await fetch(`/api/projects/${project.id}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      toast({
+        description: 'Project deleted successfully',
+      });
+      reload();
+      setOpen(false);
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Something went wrong while deleting the project',
+        variant: 'destructive',
+      });
+    }
+
+    setIsDeleting(false);
+  };
 
   const statuses = useMemo(() => {
     const value = localStorage.getItem('@project-tiles/statuses');
@@ -128,7 +189,7 @@ export function ProjectSheet({ open, setOpen, project }: ProjectSheetProps) {
         </SheetHeader>
 
         <Form {...form}>
-          <form className="grid gap-4 mt-4">
+          <form className="grid gap-4 mt-4" id="editProject" onSubmit={form.handleSubmit(onSave)}>
             <FormField
               name="status"
               control={form.control}
@@ -212,8 +273,14 @@ export function ProjectSheet({ open, setOpen, project }: ProjectSheetProps) {
         </Form>
 
         <SheetFooter className="mt-4">
-          <Button variant="destructive">Delete</Button>
-          <Button>Save</Button>
+          <Button onClick={onDelete} disabled={isDeleting} variant="destructive">
+            {isDeleting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            Delete
+          </Button>
+          <Button disabled={isSaving} type="submit" form="editProject">
+            {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            Save
+          </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
