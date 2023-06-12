@@ -35,3 +35,12 @@ export async function POST(request: NextRequest) {
     return new Response(null, { status: 500 });
   }
 }
+
+export async function GET() {
+  try {
+    const organizations = await prisma.organization.findMany();
+    return new Response(JSON.stringify(organizations), { status: 200 });
+  } catch {
+    return new Response(null, { status: 500 });
+  }
+}

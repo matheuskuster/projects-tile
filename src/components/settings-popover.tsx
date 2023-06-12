@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Settings2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -14,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Form, FormControl, FormField, FormItem, FormLabel } from './react-hook-form/form';
 import { useSlides } from './slide-provider';
 import { Switch } from './ui/switch';
+import { useToast } from './ui/use-toast';
 
 const settingsFormSchema = z.object({
   primaryColor: z.string().optional(),
@@ -32,6 +34,9 @@ export function SettingsPopover({ organizationId }: SettingsPopoverProps) {
   const [open, setOpen] = React.useState<boolean>(false);
   const { turnOffAutomaticSlides, turnOnAutomaticSlides } = useSlides();
   const [isSaving, setIsSaving] = React.useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = React.useState<boolean>(false);
+  const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof settingsFormSchema>>({
     resolver: zodResolver(settingsFormSchema),
@@ -49,6 +54,29 @@ export function SettingsPopover({ organizationId }: SettingsPopoverProps) {
     applySettings(values);
     setIsSaving(false);
     setOpen(false);
+  };
+
+  const onDelete = async () => {
+    setIsDeleting(true);
+
+    const response = await fetch(`/api/organizations/${organizationId}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      router.push('/');
+      toast({
+        description: 'Organization deleted',
+      });
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Something went wrong. Organization not deleted.',
+        variant: 'destructive',
+      });
+    }
+
+    setIsDeleting(false);
   };
 
   const applySettings = useCallback(
@@ -189,6 +217,10 @@ export function SettingsPopover({ organizationId }: SettingsPopoverProps) {
                 <Switch disabled id="hide-navbar" />
               </div>
             </div>
+
+            <Button variant="destructive" disabled={isDeleting} onClick={onDelete}>
+              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Delete organization
+            </Button>
 
             <Button disabled={isSaving}>
               {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Save

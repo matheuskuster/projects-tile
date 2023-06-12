@@ -1,7 +1,6 @@
 'use client';
 
 import { Organization } from '@prisma/client';
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { Button } from './ui/button';
@@ -28,12 +27,17 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
 
         {organization.imgURL && (
           <div className="rounded-full border w-12 h-12 flex items-center justify-center p-2 mr-2">
-            <Image src={organization.imgURL} width={48} height={48} alt={organization.name} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={organization.imgURL} width={48} height={48} alt={organization.name} />
           </div>
         )}
       </CardHeader>
       <CardContent className="px-4">
-        <span className="text-muted-foreground text-md">{organization.description}</span>
+        {organization.description ? (
+          <span className="text-muted-foreground text-md">{organization.description}</span>
+        ) : (
+          <span className="text-muted-foreground text-md">No description</span>
+        )}
       </CardContent>
     </Card>
   );
