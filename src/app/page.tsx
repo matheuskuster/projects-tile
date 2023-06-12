@@ -1,16 +1,29 @@
 'use client';
 
 import { Organization } from '@prisma/client';
+import { useEffect, useState } from 'react';
 
 import { OrganizationCard } from '@/components/organization-card';
 import { OrganizationsNav } from '@/components/organizations-nav';
 
+async function fetchOrganizations() {
+  return fetch('/api/organizations').then((res) => res.json());
+}
+
 export default async function Home() {
-  const organizations: Organization[] = await fetch('/api/organizations', {
-    next: {
-      revalidate: 10,
-    },
-  }).then((res) => res.json());
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    fetchOrganizations().then((organizations) => {
+      setOrganizations(organizations);
+    });
+
+    return () => {
+      abortController.abort();
+    };
+  }, []);
 
   return (
     <main className="overflow-hidden bg-background h-screen">

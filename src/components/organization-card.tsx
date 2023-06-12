@@ -12,7 +12,7 @@ interface OrganizationCardProps {
 
 export function OrganizationCard({ organization }: OrganizationCardProps) {
   return (
-    <Card className="w-[350px] h-fit">
+    <Card className="min-w-[350px] h-fit">
       <CardHeader className="flex-row-reverse items-center justify-end p-4">
         <div className="ml-auto mt-2">
           <Button variant="outline" asChild>
